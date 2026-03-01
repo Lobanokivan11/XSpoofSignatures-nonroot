@@ -4,14 +4,14 @@ plugins {
 
 android {
 	namespace = "dev.rushii.xspoofsignatures"
-	compileSdk = 34
+	compileSdk = 35
 
 	defaultConfig {
 		applicationId = "dev.rushii.xspoofsignatures"
 		minSdk = 3 // Yes, this is accurate
 		targetSdk = 35
 		versionCode = 2
-		versionName = "1.0.1"
+		versionName = "1.0.1-noroot"
 	}
 
 	signingConfigs {
