@@ -15,14 +15,11 @@ android {
 	}
 
 	signingConfigs {
-		val keystoreFile = System.getenv("KEYSTORE_FILE")
-			?: return@signingConfigs
-
 		create("release") {
-			storeFile = rootDir.resolve(keystoreFile)
-			storePassword = System.getenv("KEYSTORE_PASSWORD")
-			keyAlias = System.getenv("KEY_ALIAS")
-			keyPassword = System.getenv("KEY_PASSWORD")
+            storeFile = file("../sign.keystore")
+            storePassword = "369852"
+            keyAlias = "lob"
+            keyPassword = "369852"
 
 			enableV1Signing = true
 			enableV2Signing = true
