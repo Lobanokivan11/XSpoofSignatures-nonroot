@@ -8,7 +8,7 @@ android {
 
 	defaultConfig {
 		applicationId = "dev.rushii.xspoofsignatures"
-		minSdk = 3 // Yes, this is accurate
+		minSdk = 30
 		targetSdk = 35
 		versionCode = 2
 		versionName = "1.0.1-noroot"
