@@ -59,7 +59,7 @@ public class Main implements IXposedHookLoadPackage {
 					try {
 						XposedHelpers.setBooleanField(signingDetails, "mMultipleSigners", false);
 					} catch (Throwable ignored) {
-						Log.d(TAG, "THERE ISN'T MULTIPLE SIGNERS SUPPORT")
+						Log.d(TAG, "THERE ISN'T MULTIPLE SIGNERS SUPPORT");
 					}
 					XposedHelpers.setObjectField(signingDetails, "pastSigningCertificates", null);
 					XposedHelpers.setIntField(signingDetails, "signatureSchemeVersion", 3);
