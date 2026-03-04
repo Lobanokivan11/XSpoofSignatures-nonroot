@@ -46,24 +46,24 @@ public class Main implements IXposedHookLoadPackage {
     }
 
     private void spoofPackageInfo(PackageInfo pi, String fakeSigStr) {
-        try {
-            boolean makeSoleSigner = pi.applicationInfo.metaData.getBoolean("fake-signature-only", true);
-            Signature spoofedSig = new Signature(fakeSigStr);
-            Log.d(TAG, "Spoofing signatures for " + pi.packageName);
-            if (pi.signatures != null) {
-                pi.signatures = makeSoleSigner ? new Signature[]{spoofedSig} : copySignatures(pi.signatures, spoofedSig);
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && pi.signingInfo != null) {
-                Object signingDetails = XposedHelpers.getObjectField(pi.signingInfo, "mSigningDetails");
-                if (signingDetails != null) {
-                    String fieldName = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) ? "mSignatures" : "signatures";
-                    XposedHelpers.setObjectField(signingDetails, fieldName, new Signature[]{spoofedSig});
-                }
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Spoofing failed", e);
-        }
-    }
+		try {
+			Signature spoofedSig = new Signature(fakeSigStr);
+			Signature[] sigArray = new Signature[]{spoofedSig};
+			Log.d(TAG, "Spoofing signatures for " + pi.packageName);
+			pi.signatures = sigArray;
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && pi.signingInfo != null) {
+				Object signingDetails = XposedHelpers.getObjectField(pi.signingInfo, "mSigningDetails");
+				if (signingDetails != null) {
+					String fieldName = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) ? "mSignatures" : "signatures";
+					XposedHelpers.setObjectField(signingDetails, fieldName, sigArray);
+					XposedHelpers.setObjectField(signingDetails, "pastSigningCertificates", null);
+					XposedHelpers.setIntField(signingDetails, "signatureSchemeVersion", 3);
+				}
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "Spoofing failed for " + pi.packageName, e);
+		}
+	}
 
     private Signature[] copySignatures(Signature[] orig, Signature extra) {
         Signature[] signatures = new Signature[orig.length + 1];
