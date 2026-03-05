@@ -46,33 +46,37 @@ public class Main implements IXposedHookLoadPackage {
     }
 
     private void spoofPackageInfo(PackageInfo pi, String fakeSigStr) {
-		try {
-			Signature spoofedSig = new Signature(fakeSigStr);
-			Signature[] sigArray = new Signature[]{spoofedSig};
-			XposedBridge.log("Spoofing signatures for " + pi.packageName);
-			pi.signatures = sigArray;
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && pi.signingInfo != null) {
-				Object signingDetails = XposedHelpers.getObjectField(pi.signingInfo, "mSigningDetails");
-				if (signingDetails != null) {
-					String fieldName = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) ? "mSignatures" : "signatures";
-					XposedHelpers.setObjectField(signingDetails, fieldName, sigArray);
-					XposedHelpers.setBooleanField(signingDetails, "mMultipleSigners", false);
-					XposedHelpers.setObjectField(signingDetails, "pastSigningCertificates", null);
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-						XposedHelpers.setObjectField(signingDetails, "mCapabilities", null);
-					}
-					XposedHelpers.setIntField(signingDetails, "signatureSchemeVersion", 3);
+    	try {
+        	Signature spoofedSig = new Signature(fakeSigStr);
+        	Signature[] sigArray = new Signature[]{spoofedSig};
+        	XposedBridge.log("Spoofing signatures for " + pi.packageName);
+        	pi.signatures = sigArray;
+        	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            	SigningInfo signingInfo = new SigningInfo();
+            	Object signingDetails;
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                	signingDetails = XposedHelpers.newInstance(
+                    	XposedHelpers.findClass("android.content.pm.SigningDetails", null),
+                    	sigArray, 3, null, null
+					);
+				} else {
+					signingDetails = XposedHelpers.newInstance(
+						XposedHelpers.findClass("android.content.pm.PackageParser$SigningDetails", null),
+						sigArray, 3
+					);
 				}
+				XposedHelpers.setObjectField(signingInfo, "mSigningDetails", signingDetails);
+				pi.signingInfo = signingInfo;
 			}
 		} catch (Exception e) {
-			XposedBridge.log("Spoofing failed for " + pi.packageName + ": " + e.getMessage());
+			XposedBridge.log("Spoofing failed: " + e);
 		}
 	}
 
-    private Signature[] copySignatures(Signature[] orig, Signature extra) {
-        Signature[] signatures = new Signature[orig.length + 1];
-        signatures[0] = extra;
-        System.arraycopy(orig, 0, signatures, 1, orig.length);
-        return signatures;
+	private Signature[] copySignatures(Signature[] orig, Signature extra) {
+		Signature[] signatures = new Signature[orig.length + 1];
+		signatures[0] = extra;
+		System.arraycopy(orig, 0, signatures, 1, orig.length);
+		return signatures;
     }
 }
