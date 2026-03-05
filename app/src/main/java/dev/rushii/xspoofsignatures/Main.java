@@ -56,11 +56,7 @@ public class Main implements IXposedHookLoadPackage {
 				if (signingDetails != null) {
 					String fieldName = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) ? "mSignatures" : "signatures";
 					XposedHelpers.setObjectField(signingDetails, fieldName, sigArray);
-					try {
-						XposedHelpers.setBooleanField(signingDetails, "mMultipleSigners", false);
-					} catch (Throwable ignored) {
-						Log.d(TAG, "THERE ISN'T MULTIPLE SIGNERS SUPPORT");
-					}
+					XposedHelpers.setBooleanField(signingDetails, "mMultipleSigners", false);
 					XposedHelpers.setObjectField(signingDetails, "pastSigningCertificates", null);
 					XposedHelpers.setIntField(signingDetails, "signatureSchemeVersion", 3);
 				}
