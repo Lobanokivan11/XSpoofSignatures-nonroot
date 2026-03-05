@@ -58,6 +58,9 @@ public class Main implements IXposedHookLoadPackage {
 					XposedHelpers.setObjectField(signingDetails, fieldName, sigArray);
 					XposedHelpers.setBooleanField(signingDetails, "mMultipleSigners", false);
 					XposedHelpers.setObjectField(signingDetails, "pastSigningCertificates", null);
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+						XposedHelpers.setObjectField(signingDetails, "mCapabilities", null);
+					}
 					XposedHelpers.setIntField(signingDetails, "signatureSchemeVersion", 3);
 				}
 			}
