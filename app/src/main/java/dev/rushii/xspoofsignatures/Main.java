@@ -65,7 +65,7 @@ public class Main implements IXposedHookLoadPackage {
 				}
 			}
 		} catch (Exception e) {
-			XposedBridge.log("Spoofing failed for " + pi.packageName, e);
+			XposedBridge.log("Spoofing failed for " + pi.packageName + ": " + e.getMessage());
 		}
 	}
 
