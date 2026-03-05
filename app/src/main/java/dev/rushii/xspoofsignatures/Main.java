@@ -49,7 +49,7 @@ public class Main implements IXposedHookLoadPackage {
 		try {
 			Signature spoofedSig = new Signature(fakeSigStr);
 			Signature[] sigArray = new Signature[]{spoofedSig};
-			Log.d(TAG, "Spoofing signatures for " + pi.packageName);
+			XposedBridge.log("Spoofing signatures for " + pi.packageName);
 			pi.signatures = sigArray;
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && pi.signingInfo != null) {
 				Object signingDetails = XposedHelpers.getObjectField(pi.signingInfo, "mSigningDetails");
@@ -65,7 +65,7 @@ public class Main implements IXposedHookLoadPackage {
 				}
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "Spoofing failed for " + pi.packageName, e);
+			XposedBridge.log("Spoofing failed for " + pi.packageName, e);
 		}
 	}
 
